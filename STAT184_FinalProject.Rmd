@@ -12,6 +12,20 @@ editor_options:
 library(dplyr)
 library(ggplot2)
 
+<<<<<<< Updated upstream
+=======
+
+
+TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+
+HoursByAge<- TimeSleep%>%
+  group_by(`Age Group`)%>%
+  summarize(
+    Mean=mean(`AverageHoursPerDaySleeping`)
+  )
+HoursByAge<-HoursByAge[-2,]
+
+>>>>>>> Stashed changes
 ```
 
 > ```{r}
