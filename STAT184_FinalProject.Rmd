@@ -14,6 +14,19 @@ library(ggplot2)
 library(readr)
 library(tidyr)
 
+
+
+
+TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+
+HoursByAge<- TimeSleep%>%
+  group_by(`Age Group`)%>%
+  summarize(
+    Mean=mean(`AverageHoursPerDaySleeping`)
+  )
+HoursByAge<-HoursByAge[-2,]
+
+
 ```
 
 > ```{r}
@@ -22,6 +35,11 @@ library(tidyr)
 > colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 > ```
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+
+
