@@ -49,16 +49,3 @@ HoursByAge<-HoursByAge[-2,]
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-    Mean=mean(`AverageHoursPerDaySleeping`)
-  )
-HoursByAge<-HoursByAge[-2,]
-View(HoursByAge)
-```
-
-
-
-
-```
-
-
