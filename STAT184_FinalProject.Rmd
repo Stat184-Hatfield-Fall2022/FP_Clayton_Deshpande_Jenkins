@@ -9,8 +9,21 @@ editor_options:
 ---
 
 ```{r}
+library(readxl)
+TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+```
+
+```{r}
 library(dplyr)
 library(ggplot2)
+
+library(readr)
+library(tidyr)
+
+
+TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(TimeSleep$`Average Hours Per Day Sleeping`)
+
 library(readxl)
 library(tidyverse)
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
@@ -21,9 +34,22 @@ TimeSleep <- TimeSleep[-1,]
 
 TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
 
+
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
+
+    Mean=mean(`Average Hours Per Day Sleeping`)
+  )
+HoursByAge<-HoursByAge[-2,]
+
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
