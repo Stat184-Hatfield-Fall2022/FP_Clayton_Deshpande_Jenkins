@@ -31,8 +31,7 @@ colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','St
 TimeSleep <- TimeSleep[-1,]
 
 
-
-TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
 
 
 HoursByAge<- TimeSleep%>%
