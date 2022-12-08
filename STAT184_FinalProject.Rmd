@@ -8,7 +8,7 @@ editor_options:
     wrap: 72
 ---
 
-```{r Tidy Data}
+```{r LoadPackages}
 
 library(dplyr)
 library(ggplot2)
@@ -16,16 +16,14 @@ library(readxl)
 library(tidyverse)
 library(readr)
 library(tidyr)
+library(esquisse)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
 <<<<<<< HEAD
 ```
 
-```{r}
-#load data 
-TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
-SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
+```{r Tidying Data and Creating Data Frame}
 
 
 #rename columns 
@@ -50,6 +48,7 @@ TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDa
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 #creates new data fram of average hours of sleep
 =======
@@ -57,6 +56,12 @@ TimeSleep <- TimeSleep[-1,]
 ```
 
 ```{r}
+=======
+#changes average hours per day sleeping to numbers
+TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+
+#creates new data frame with of average hour per day sleeping
+>>>>>>> Stashed changes
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
@@ -66,10 +71,13 @@ HoursByAge<-HoursByAge[-2,]
 
 <<<<<<< HEAD
 
+<<<<<<< Updated upstream
 
 =======
 View(HoursByAge)
 >>>>>>> 20fa47e915ecdc6c3a200a59dff1895e36e593e0
+=======
+>>>>>>> Stashed changes
 ```
 
 ```{r HoursByAgeVisualization}
@@ -115,5 +123,12 @@ ggplot(
 -   movements per hour vs time asleep
 
 ```{r}
-
+movementsVsTime <- SleepQualityData %>%
+  select(movem)
+  
+  
+  
+  
 ```
+
+esquisse:: esquisser(data=SleepQualityData, view = "browser")
