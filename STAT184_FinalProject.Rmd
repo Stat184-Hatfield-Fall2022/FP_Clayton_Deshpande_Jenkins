@@ -2,18 +2,13 @@
 title: "Final Project"
 author: "Veronica Jenkins, Anika Deshpande, Katie Clayton"
 date: "`r Sys.Date()`"
-output: html_document
+output: html_document  
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
-```{r Read Data}
-
-```
-
-```{r Tidy Data}
-
+```{r LoadPackages}
 library(dplyr)
 library(ggplot2)
 library(readxl)
@@ -22,26 +17,22 @@ library(readr)
 library(tidyr)
 ```
 
-
-
-
-#load data
+```{r TimeSleep}
+#load data 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 
-#rename columns
+#rename columns 
 colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 
-
 #Make values in "Average Hours Per Day Sleeping" coloumns 
-TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(TimeSleep$`Average Hours Per Day Sleeping`)
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$'Average Hours Per Day Sleeping')
 
-#removes first column
+#removes first column 
 TimeSleep <- TimeSleep[-1,]
+```
 
-#creates new data fram of average hours of sleep 
-
-```{r}
-TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+```{r WrangleHoursByAge}
+TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$'AverageHoursPerDaySleeping'))
 
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
@@ -49,10 +40,6 @@ HoursByAge<- TimeSleep%>%
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
-
-View(HoursByAge)
-
-
 ```
 
 ```{r HoursByAgeVisualization}
