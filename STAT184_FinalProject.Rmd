@@ -10,8 +10,6 @@ editor_options:
 
 ```{r LoadPackages}
 
-
-
 library(dplyr)
 library(ggplot2)
 library(readxl)
@@ -21,6 +19,7 @@ library(tidyr)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
+View(SleepQualityData)
 ```
 
 ```{r TimeSleep}
@@ -33,6 +32,7 @@ colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping'
 #Make values in "Average Hours Per Day Sleeping" coloumns 
 TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$'Average Hours Per Day Sleeping')
 
+```{r TimeSleep}
 #rename columns
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 TimeSleep <- TimeSleep[-1,]
@@ -49,7 +49,15 @@ TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$'Averag
 
 ```
 
-```{r}
+```{r }
+#rename column names
+colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'Mood', 'HeartRate(BPM)', 'Steps', 'AlarmMode', 'AirPressure(Pa)', 'City', 'MovementsPerHour', 'TimeInBed(Seconds)', 'TimeBeforeSleep(Seconds)', 'WindowStart', 'WindowStop', 'DidSnore', 'SnoreTime', 'WeatherTemperature(Celcius)', 'WeatherTypes', 'Notes')
+
+#get rid of the first column
+SleepQualityData <- SleepQualityData[-1]
+```
+
+```{r WrangleHoursByAge}
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
@@ -78,6 +86,15 @@ ggplot(
     title = "Mean Hours of Sleep per Night Depending on Age Group"
   ) +
   theme_minimal()
+```
+
+```{r SleepQualityByHoursVisualization}
+#
+
+```
+
+```{r}
+
 ```
 
 ```{r setup, include=FALSE}
