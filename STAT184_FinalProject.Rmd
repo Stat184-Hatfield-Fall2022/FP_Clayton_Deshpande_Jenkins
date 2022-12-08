@@ -9,12 +9,18 @@ editor_options:
 ---
 
 ```{r LoadPackages}
+
+
+
 library(dplyr)
 library(ggplot2)
 library(readxl)
 library(tidyverse)
 library(readr)
 library(tidyr)
+
+TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
 ```
 
 ```{r TimeSleep}
@@ -27,6 +33,12 @@ colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping'
 #Make values in "Average Hours Per Day Sleeping" coloumns 
 TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$'Average Hours Per Day Sleeping')
 
+#rename columns
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+TimeSleep <- TimeSleep[-1,]
+#Make values in "Average Hours Per Day Sleeping" coloumns 
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
 ```
@@ -34,6 +46,10 @@ TimeSleep <- TimeSleep[-1,]
 ```{r WrangleHoursByAge}
 TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$'AverageHoursPerDaySleeping'))
 
+
+```
+
+```{r}
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
