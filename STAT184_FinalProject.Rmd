@@ -19,6 +19,7 @@ library(tidyr)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
+<<<<<<< HEAD
 ```
 
 ```{r}
@@ -32,16 +33,30 @@ colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','St
 
 #Make values in "Average Hours Per Day Sleeping" coloumns 
 TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(TimeSleep$'AverageHoursPerDaySleeping')
+=======
+
+
+
+```
+
+```{r}
+#rename columns
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+TimeSleep <- TimeSleep[-1,]
+#Make values in "Average Hours Per Day Sleeping" coloumns 
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+>>>>>>> 20fa47e915ecdc6c3a200a59dff1895e36e593e0
 
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
 
+<<<<<<< HEAD
 #creates new data fram of average hours of sleep
+=======
+>>>>>>> 20fa47e915ecdc6c3a200a59dff1895e36e593e0
 ```
 
 ```{r}
-TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
-
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
@@ -49,8 +64,12 @@ HoursByAge<- TimeSleep%>%
   )
 HoursByAge<-HoursByAge[-2,]
 
+<<<<<<< HEAD
 
 
+=======
+View(HoursByAge)
+>>>>>>> 20fa47e915ecdc6c3a200a59dff1895e36e593e0
 ```
 
 ```{r HoursByAgeVisualization}
