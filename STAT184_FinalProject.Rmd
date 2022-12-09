@@ -2,7 +2,7 @@
 title: "Final Project"
 author: "Veronica Jenkins, Anika Deshpande, Katie Clayton"
 date: "`r Sys.Date()`"
-output: html_document
+output: html_document  
 editor_options: 
   markdown: 
     wrap: 72
@@ -19,20 +19,20 @@ library(tidyr)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
-View(SleepQualityData)
-
 ```
 
 ```{r TimeSleep}
-#rename columns
-colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
-TimeSleep <- TimeSleep[-1,]
+#load data 
+TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+
+#rename columns 
+colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+
 #Make values in "Average Hours Per Day Sleeping" coloumns 
-TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$'Average Hours Per Day Sleeping')
 
-#removes first column
+#removes first column 
 TimeSleep <- TimeSleep[-1,]
-
 ```
 
 ```{r SleepQuality}
@@ -42,7 +42,6 @@ colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'M
 #get rid of the first column
 SleepQualityData <- SleepQualityData[-1,]
 
-View(SleepQualityData)
 ```
 
 ```{r WrangleHoursByAge}
@@ -97,18 +96,18 @@ SleepQualityData$`SleepQuality`<- as.numeric(SleepQualityData$`SleepQuality`)
 
 #load a package to convert sleep quality to percent
 library(scales)
-SleepQuality$`SleepQuality` <- percent(SleepQuality$`SleepQuality`, accuracy = 1)
+SleepQuality$`SleepQuality` <- percent(SleepQualityData$`SleepQuality`, accuracy = 1)
 
 #Create a dataframe with the two neccessary columns and rename the columns
 SleepQualityByHours<-data.frame(SleepQuality$`HoursOfSleep`, SleepQuality$`SleepQuality`)
 colnames(SleepQualityByHours) <- c('HoursOfSleep', 'SleepQualityPercent')
 
-View(SleepQualityByHours)
+
 ```
 
 ```{r SleepQualityByHoursVisualization}
-library(esquisse)
-esquisse::esquisser(data = SleepQualityByHours, viewer = "browser")
+#library(esquisse)
+#esquisse::esquisser(data = SleepQualityByHours, viewer = "browser")
 
 
 ```
