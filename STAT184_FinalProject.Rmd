@@ -16,9 +16,26 @@ library(readxl)
 library(tidyverse)
 library(readr)
 library(tidyr)
+library(esquisse)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
+
+```
+
+```{r Tidying Data and Creating Data Frame}
+
+
+#rename columns 
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+
+#Make values in "Average Hours Per Day Sleeping" coloumns 
+TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(TimeSleep$'AverageHoursPerDaySleeping')
+
+
+
+
+
 ```
 
 ```{r TimeSleep}
@@ -31,6 +48,7 @@ colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','St
 #Make values in "Average Hours Per Day Sleeping" coloumns 
 TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
 
+
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
 ```
@@ -42,15 +60,29 @@ colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'M
 #get rid of the first column
 SleepQualityData <- SleepQualityData[-1,]
 
+
+#creates new data fram of average hours of sleep
 ```
 
+
 ```{r WrangleHoursByAge}
+
+
+
+#changes average hours per day sleeping to numbers
+TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+
+#creates new data frame with of average hour per day sleeping
+
+
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
+
+
 
 ```
 
@@ -59,7 +91,12 @@ HoursByAge<-HoursByAge[-2,]
 #load ggplot, dplyr and HoursByAge data
 library(scales)
 library(ggplot2)
+
 data(HoursByAge)
+
+
+library(dplyr)
+
 ggplot(
   data = HoursByAge,
   mapping = aes(x = `Age Group`, weight = Mean)
@@ -181,6 +218,33 @@ DaysVsSleep %>%
   kableExtra::kable_classic()
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+-   time to go to sleep vs sleep quality(maybe)
+
+```{r}
+
 ```
+
+-   wrangling amount of time to go to sleep vs sleep quality
+
+```{r}
+
+```
+
+-   movements per hour sleep quality
+
+```{r}
+
+```
+
+-   movements per hour vs time asleep
+
+```{r}
+movementsVsTime <- SleepQualityData %>%
+  select(movem)
+  
+  
+  
+  
+```
+
+esquisse:: esquisser(data=SleepQualityData, view = "browser")
