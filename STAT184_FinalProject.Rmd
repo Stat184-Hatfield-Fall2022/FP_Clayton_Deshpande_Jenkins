@@ -26,10 +26,10 @@ SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 
 #rename columns 
-colnames(TimeSleep)<- c('Index','Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 
 #Make values in "Average Hours Per Day Sleeping" coloumns 
-TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$'Average Hours Per Day Sleeping')
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
 
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
@@ -135,7 +135,49 @@ ggplot(
 ```
 
 ```{r HoursByDaySummaryTable}
-
+library(readxl)
+library(kableExtra)
+library(janitor)
+TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+TimeSleep <- TimeSleep[-1,]
+DaysVsSleep <- TimeSleep %>%
+  group_by(`Type of Days`) %>%
+  select(`Type of Days`, `AverageHoursPerDaySleeping`) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        Q1 = ~quantile(`AverageHoursPerDaySleeping`, probs = 0.25, na.rm = TRUE),
+        median = ~median(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        Q3 = ~quantile(`AverageHoursPerDaySleeping`, probs = 0.75, na.rm = TRUE),
+        max = ~max(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        sam = ~mean(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        sasd = ~sd(`AverageHoursPerDaySleeping`, na.rm = TRUE)
+      ),
+      #round the values to avoid unecessarily large amount of decimal spaces
+      round(digits = 2)
+    ),
+    #get count and format it so that big numbers are separated with commas
+    count = format(n(), big.mark = ","),
+  )
+#rename the columns 
+colnames(DaysVsSleep) <- c("Day Classification", "Min", "1st Quartile", "Median", "3rd Quartile", "Max", "Arithmetic Mean", "Arithmetic Standard Deviation", "Count")
+#use kable to tidy the table (add caption, add grid, align columns) 
+DaysVsSleep %>%
+  kable(
+    caption = "Statistics on Average Hours Spent Sleeping and Type of Day",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6))
+  ) %>%
+  #separate rows through striping the colors
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  ) %>%
+  kableExtra::kable_classic()
 ```
 
 ```{r setup, include=FALSE}
