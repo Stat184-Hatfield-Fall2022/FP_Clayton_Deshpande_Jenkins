@@ -11,7 +11,7 @@ editor_options:
 ```{r LoadPackages}
 
 library(dplyr)
-library(ggplot2)
+library(ggplot2)   
 library(readxl)
 library(tidyverse)
 library(readr)
