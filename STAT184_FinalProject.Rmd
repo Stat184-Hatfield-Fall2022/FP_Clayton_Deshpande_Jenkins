@@ -35,12 +35,14 @@ TimeSleep <- TimeSleep[-1,]
 
 ```
 
-```{r }
+```{r SleepQuality}
 #rename column names
-colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'Mood', 'HeartRate(BPM)', 'Steps', 'AlarmMode', 'AirPressure(Pa)', 'City', 'MovementsPerHour', 'TimeInBed(Seconds)', 'TimeBeforeSleep(Seconds)', 'WindowStart', 'WindowStop', 'DidSnore', 'SnoreTime', 'WeatherTemperature(Celcius)', 'WeatherTypes', 'Notes')
+colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'Mood', 'HeartRate(BPM)', 'Steps', 'AlarmMode', 'AirPressure(Pa)', 'City', 'MovementsPerHour', 'TimeInBed(Seconds)', 'TimeAsleep(Seconds)', 'TimeBeforeSleep(Seconds)', 'WindowStart', 'WindowStop', 'DidSnore', 'SnoreTime', 'WeatherTemperature(Celcius)', 'WeatherTypes', 'Notes')
 
 #get rid of the first column
-SleepQualityData <- SleepQualityData[-1]
+SleepQualityData <- SleepQualityData[-1,]
+
+View(SleepQualityData)
 ```
 
 ```{r WrangleHoursByAge}
@@ -51,7 +53,6 @@ HoursByAge<- TimeSleep%>%
   )
 HoursByAge<-HoursByAge[-2,]
 
-View(HoursByAge)
 ```
 
 ```{r HoursByAgeVisualization}
@@ -76,12 +77,65 @@ ggplot(
   theme_minimal()
 ```
 
+```{r SleepQualityByHoursTidyData}
+#TidyData
+
+#Create a dataframe with only the necessary columns
+SleepQuality <- data.frame(SleepQualityData$`Start`, SleepQualityData$`End`, SleepQualityData$`SleepQuality`)
+#rename the columns
+colnames(SleepQuality) <- c('Start', 'End', 'SleepQuality')
+
+#Create a column calculating the difference in timestamps to get hours of sleep
+SleepQuality <- transform(
+  SleepQuality, HoursOfSleep= as.numeric(difftime(as.POSIXct(SleepQualityData$`End`), as.POSIXct(SleepQualityData$`Start`)), units = "hours"))
+
+#round hours of sleep
+SleepQuality$`HoursOfSleep` <- round(SleepQuality$`HoursOfSleep`, digits = 2)
+
+#Convert sleep quality to numeric
+SleepQualityData$`SleepQuality`<- as.numeric(SleepQualityData$`SleepQuality`)
+
+#load a package to convert sleep quality to percent
+library(scales)
+SleepQuality$`SleepQuality` <- percent(SleepQuality$`SleepQuality`, accuracy = 1)
+
+#Create a dataframe with the two neccessary columns and rename the columns
+SleepQualityByHours<-data.frame(SleepQuality$`HoursOfSleep`, SleepQuality$`SleepQuality`)
+colnames(SleepQualityByHours) <- c('HoursOfSleep', 'SleepQualityPercent')
+
+View(SleepQualityByHours)
+```
+
 ```{r SleepQualityByHoursVisualization}
-#
+library(esquisse)
+esquisse::esquisser(data = SleepQualityByHours, viewer = "browser")
+
 
 ```
 
-```{r}
+```{r HoursByDayType}
+HoursByDay <- TimeSleep %>%
+  group_by(`Type of Days`) %>%
+  select(`Type of Days`, `AverageHoursPerDaySleeping`)
+
+```
+
+```{r HoursByDayTypeVisualization}
+ggplot(
+  data = HoursByDay,
+  mapping = aes(x = `Type of Days`, y = AverageHoursPerDaySleeping)
+  ) +
+  geom_boxplot(fill = "#FFD1E8") +
+  labs(
+    x = "Day Classification",
+    y = "Hours of Sleep",
+    title = "Hours of Sleep by Day Classification"
+  ) +
+  theme_minimal() +
+  ylim(7.5, 11)
+```
+
+```{r HoursByDaySummaryTable}
 
 ```
 
