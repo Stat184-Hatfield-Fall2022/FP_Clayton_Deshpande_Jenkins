@@ -18,23 +18,9 @@ library(readr)
 library(tidyr)
 library(esquisse)
 
+
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
-
-```
-
-```{r Tidying Data and Creating Data Frame}
-
-
-#rename columns 
-colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
-
-#Make values in "Average Hours Per Day Sleeping" coloumns 
-TimeSleep$`Average Hours Per Day Sleeping`<- as.numeric(TimeSleep$'AverageHoursPerDaySleeping')
-
-
-
-
 
 ```
 
@@ -64,16 +50,9 @@ SleepQualityData <- SleepQualityData[-1,]
 #creates new data fram of average hours of sleep
 ```
 
-
 ```{r WrangleHoursByAge}
 
-
-
-#changes average hours per day sleeping to numbers
-TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
-
 #creates new data frame with of average hour per day sleeping
-
 
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
@@ -81,8 +60,6 @@ HoursByAge<- TimeSleep%>%
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
-
-
 
 ```
 
@@ -239,33 +216,11 @@ DaysVsSleep %>%
   kableExtra::kable_classic()
 ```
 
--   time to go to sleep vs sleep quality(maybe)
-
-```{r}
-
-```
-
--   wrangling amount of time to go to sleep vs sleep quality
-
-```{r}
-
-```
-
--   movements per hour sleep quality
-
-```{r}
-
-```
-
--   movements per hour vs time asleep
-
 ```{r}
 movementsVsTime <- SleepQualityData %>%
   select(movem)
   
   
   
-  
-```
 
-esquisse:: esquisser(data=SleepQualityData, view = "browser")
+```
