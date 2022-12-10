@@ -2,14 +2,15 @@
 title: "Final Project"
 author: "Veronica Jenkins, Anika Deshpande, Katie Clayton"
 date: "`r Sys.Date()`"
-output: html_document  
+output: 
+  html_notebook:
+    code folding: TRUE
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
 ```{r LoadPackages}
-
 library(dplyr)
 library(ggplot2)   
 library(readxl)
@@ -21,7 +22,6 @@ library(esquisse)
 
 TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
 SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
-
 ```
 
 ```{r TimeSleep}
@@ -34,7 +34,6 @@ colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','St
 #Make values in "Average Hours Per Day Sleeping" coloumns 
 TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
 
-
 #removes first column 
 TimeSleep <- TimeSleep[-1,]
 ```
@@ -46,21 +45,17 @@ colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'M
 #get rid of the first column
 SleepQualityData <- SleepQualityData[-1,]
 
-
 #creates new data fram of average hours of sleep
 ```
 
 ```{r WrangleHoursByAge}
-
 #creates new data frame with of average hour per day sleeping
-
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
-
 ```
 
 ```{r HoursByAgeVisualization}
@@ -68,10 +63,7 @@ HoursByAge<-HoursByAge[-2,]
 #load ggplot, dplyr and HoursByAge data
 library(scales)
 library(ggplot2)
-
 data(HoursByAge)
-
-
 library(dplyr)
 
 ggplot(
@@ -117,7 +109,6 @@ SleepQuality$`SleepQuality` <- formattable::percent(SleepQualityData$`SleepQuali
 #Create a dataframe with the two neccessary columns and rename the columns
 SleepQualityByHours<-data.frame(SleepQuality$`HoursOfSleep`, SleepQuality$`SleepQuality`)
 colnames(SleepQualityByHours) <- c('HoursOfSleep', 'SleepQualityPercent')
-
 ```
 
 ```{r SleepQualityByHoursVisualization}
@@ -148,7 +139,6 @@ HoursByDay <- TimeSleep %>%
   group_by(`Type of Days`) %>%
   #select the two columns needed: day type and average hours asleep 
   select(`Type of Days`, `AverageHoursPerDaySleeping`)
-
 ```
 
 ```{r HoursByDayTypeVisualization}
@@ -247,7 +237,4 @@ ggplot(
   theme_minimal() 
   #fix the x axis scaling
   scale_x_continuous(breaks = seq(0,150, by = 15), limits = c(0,150), expand = c(0, 0))
-
 ```
-
-hello welcome back to another minecraft lets play video
