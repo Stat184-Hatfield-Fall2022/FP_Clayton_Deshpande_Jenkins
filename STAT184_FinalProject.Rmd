@@ -52,10 +52,7 @@ SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx", skip = 1)
 ```
 
 ```{r TimeSleep}
-#load data 
-TimeSleep <- read_excel(
-  path = "~/Desktop/TimeSleep.xlsx",
-  skip = 1)
+
 
 #rename columns 
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
@@ -105,7 +102,6 @@ HoursByAge<-HoursByAge[-2,]
 #load ggplot, dplyr and HoursByAge data
 library(scales)
 library(ggplot2)
-data(HoursByAge)
 library(dplyr)
 
 ggplot(
@@ -188,7 +184,12 @@ ggplot(
   #customize point size, color, and shape
   geom_point(shape = "circle", size = 1.0, colour = "#BF1B6D") +
   #create a line of best fit and get rid of the spanning color
-  geom_smooth(span = 0.75, se = FALSE, colour = "black") +
+  geom_smooth(
+    span = 0.75,
+    se = FALSE,
+    colour = "black",
+    method = "loess",
+    formula = y~x) +
   #create titles and axis labels
   labs(
     x = "Hours of Sleep",
@@ -281,7 +282,7 @@ library(janitor)
 
 
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
-TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+
 TimeSleep <- TimeSleep[-1,]
 DaysVsSleep <- TimeSleep %>%
   group_by(`Type of Days`) %>%
@@ -353,35 +354,33 @@ SleepQualityData$`SleepQuality`<- as.numeric(SleepQualityData$`SleepQuality`)
 
 #filter data
 movementsVsTime <- SleepQualityData %>%
-  select(MovementsPerHour,SleepQuality)
+  select(MovementsPerHour, SleepQuality)
 
 #subset data
-movementsVsTime <- movementsVsTime[0:250,]
+movementsVsTime <- movementsVsTime[0:250, ]
 
 #use ggplot to create a line graph. Select the data and x&y axis
 ggplot(
   data = movementsVsTime,
   mapping = aes(x = MovementsPerHour, y = SleepQuality )
   ) +
-
-  #assign the points a shape and color and add a line of best fit
+  geom_point(shape = "circle", colour = "#BF1B6D") + #assign the points a shape and color and add a line of best fit
+  geom_smooth(
+    span = 0.75,
+    se = FALSE,
+    colour = "black",
+    method = "loess", 
+    formula = y ~ x
+  ) +
   geom_point(shape = "circle", colour = "#BF1B6D") +
-  geom_smooth(span = 0.75, se = FALSE, colour = "black") +
-
-
-  geom_point(shape = "circle", colour = "#BF1B6D") +
-
   # adding titles and labels
-  labs(
+  labs( # adding titles and labels
     x = "Movements Per Hour",
     y = "Sleep Quality",
     title = "Movements Per Hour vs Sleep Quality"
   ) +
-  #set the graph appearance
-  theme_minimal() 
-
-  #fix the x axis scaling
-  scale_x_continuous(breaks = seq(0,150, by = 15), limits = c(0,150), expand = c(0, 0))
+  theme_minimal() + #set the graph appearance
+  scale_x_continuous(breaks = seq(0,150, by = 15), expand = c(0, 0))  #fix the x axis scaling
 ```
 
 #### What is Shown?
