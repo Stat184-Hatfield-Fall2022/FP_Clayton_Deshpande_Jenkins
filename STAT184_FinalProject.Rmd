@@ -52,10 +52,7 @@ SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx", skip = 1)
 ```
 
 ```{r TimeSleep}
-#load data 
-TimeSleep <- read_excel(
-  path = "~/Desktop/TimeSleep.xlsx",
-  skip = 1)
+
 
 #rename columns 
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
@@ -105,7 +102,6 @@ HoursByAge<-HoursByAge[-2,]
 #load ggplot, dplyr and HoursByAge data
 library(scales)
 library(ggplot2)
-data(HoursByAge)
 library(dplyr)
 
 ggplot(
@@ -281,7 +277,7 @@ library(janitor)
 
 
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
-TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+
 TimeSleep <- TimeSleep[-1,]
 DaysVsSleep <- TimeSleep %>%
   group_by(`Type of Days`) %>%
@@ -381,7 +377,9 @@ ggplot(
   theme_minimal() 
 
   #fix the x axis scaling
-  scale_x_continuous(breaks = seq(0,150, by = 15), limits = c(0,150), expand = c(0, 0))
+  scale_x_continuous(breaks = seq(0,150, by = 15), expand = c(0, 0))
+  
+
 ```
 
 #### What is Shown?
