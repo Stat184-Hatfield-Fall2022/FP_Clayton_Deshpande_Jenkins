@@ -1,43 +1,412 @@
 ---
-title: "Final Project"
+title: "Analyzing Sleep Data and Trends"
 author: "Veronica Jenkins, Anika Deshpande, Katie Clayton"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_notebook:
+    code folding: TRUE
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
-```{r}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The two data sets we have chosen to use are called "How Much Sleep Do
+Americans Really Get?" and "Sleep Data." Both are from the website
+Kaggle. In this project, we renamed the first data set, TimeSleep while
+the second remained SleepQualityData. The TimeSleep data set was
+originally created to study the sleep patterns of people among different
+age groups. The attributes consist of year, period, average hours per
+day sleeping, standard error, type of days, age group, activity and sex.
+We chose not to use all the attributes, as they did not relate to our
+research questions. The attributes we did use throughout this project
+from this data set are Average Hours Per Day Sleeping, Type of Days, and
+Age Group. The SleepQuality data set was gathered from the Sleep Cycle
+iOS app between 2014-2018. The purpose of this gathered data was to
+compare the different ways people sleep, their length of sleep and how
+outside factors affected how much/how well they slept. There were
+multiple attributes included in this set, but we pulled a few we thought
+could contribute best to our project. The attributes we used are Hours
+of Sleep, Sleep Quality, and Movements Per Hour.
+
+```{r LoadPackages}
+#CamelCase
 library(dplyr)
-library(ggplot2)
+library(ggplot2)   
+library(readxl)
+library(tidyverse)
+library(readr)
+library(tidyr)
+library(esquisse)
 
-<<<<<<< Updated upstream
-=======
+TimeSleep <- read_excel(
+  path = "~/Desktop/TimeSleep.xlsx",
+  skip = 1)
+
+SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx", skip = 1)
+```
+
+```{r TimeSleep}
 
 
-TimeSleep$AverageHoursPerDaySleeping<- as.numeric(as.character(TimeSleep$AverageHoursPerDaySleeping))
+#rename columns 
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 
+#Make values in "Average Hours Per Day Sleeping" coloumns 
+# TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+# 
+# #removes first column 
+# TimeSleep <- TimeSleep[-1,]
+```
+
+```{r SleepQuality}
+#rename column names
+colnames(SleepQualityData) <- c('Start', 'End', 'SleepQuality', 'Regularity', 'Mood', 'HeartRate(BPM)', 'Steps', 'AlarmMode', 'AirPressure(Pa)', 'City', 'MovementsPerHour', 'TimeInBed(Seconds)', 'TimeAsleep(Seconds)', 'TimeBeforeSleep(Seconds)', 'WindowStart', 'WindowStop', 'DidSnore', 'SnoreTime', 'WeatherTemperature(Celcius)', 'WeatherTypes', 'Notes')
+
+#get rid of the first column
+SleepQualityData <- SleepQualityData[-1,]
+
+#creates new data frame of average hours of sleep
+```
+
+## Hours by Age
+
+#### Is there change in mean hours of sleep per night depending on different age groups?
+
+The Time Sleep data set presented two attributes that were easy to
+compare: Mean Hours of Sleep Per Night, and Age Group. We chose to
+incorporate this into our research because the phrase "I am so tired" is
+used very frequently among many different age groups. Additionally,
+different age groups are known to get more/less sleep than others, so we
+wanted to explore how much the difference is. After choosing the
+attributes, we made a table and were able to input the table into ggplot
+to create the bar graph.
+
+```{r WrangleHoursByAge}
+#creates new data frame with of average hour per day sleeping
 HoursByAge<- TimeSleep%>%
   group_by(`Age Group`)%>%
   summarize(
     Mean=mean(`AverageHoursPerDaySleeping`)
   )
 HoursByAge<-HoursByAge[-2,]
-
->>>>>>> Stashed changes
 ```
 
-> ```{r}
-> library(readxl)
-> TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
->
->
->
-> colnames(TimeSleep)<- c('Year','Period','Average Hours Per Day Sleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
->
-> View(TimeSleep)
-> ```
+```{r HoursByAgeVisualization}
+# making the visualization for HoursByAge
+#load ggplot, dplyr and HoursByAge data
+library(scales)
+library(ggplot2)
+library(dplyr)
+
+ggplot(
+  data = HoursByAge,
+  mapping = aes(x = `Age Group`, weight = Mean)
+) +
+  geom_bar(fill = "#FFD1E8", width = 0.67, color = "black") +
+  # adding titles and labels
+  labs(
+    x = "Age Group",
+    y = "Mean Hours of Sleep",
+    title = "Mean Hours of Sleep per Night Depending on Age Group"
+  ) +
+  theme(axis.line.x = element_line(color="black", size = .25),
+        axis.line.y = element_line(color="black", size = .25)
+  ) +
+  scale_y_continuous(breaks = seq(0,10, by = 0.5), limits = c(0,10), expand = c(0, 0))
+```
+
+#### What Can be Shown?
+
+The bar graphs shows six different age groups and a range of 0 to 10
+mean hours of sleep. While all the age groups seem to show similar
+numbers, we can conclude that the age group 15 to 24 years has the
+highest mean while the age group 45 to 54 years has the lowest. If you
+were to draw a curved line at the top of the bars, it would form a
+slight "u" shape showing how people will start with the max mean hours
+of sleep and will slowly decrease to the min and immediately will begin
+to steadily increase until reaching the max once again. Although there
+is not a huge difference, it is interesting to see how the data displays
+as opposed to what people may originally assume.
+
+## Sleep Quality by Hours of Sleep
+
+#### How is sleep quality affected by hours of sleep per night?
+
+For this question, we pulled data from the Sleep Quality Data set
+imported from excel. We selected the attributes Sleep Quality and Hours
+of Sleep. The attribute Sleep Quality is formatted as a percentage and
+is displayed in decimal format for the graph. Using the filtered data of
+the selected column, we displayed the data in a scatter plot with a line
+of best fit.
+
+```{r SleepQualityByHoursTidyData}
+#TidyData
+
+#Create a dataframe with only the necessary columns
+SleepQuality <- data.frame(SleepQualityData$'Start', SleepQualityData$'End', SleepQualityData$'SleepQuality')
+#rename the columns
+
+
+colnames(SleepQuality) <- c('Start', 'End', 'SleepQuality')
+
+#Create a column calculating the difference in timestamps to get hours of sleep
+SleepQuality <- transform(
+  SleepQuality, HoursOfSleep= as.numeric(difftime(as.POSIXct(SleepQualityData$`End`), as.POSIXct(SleepQualityData$`Start`)), units = "hours"))
+
+#round hours of sleep
+SleepQuality$`HoursOfSleep` <- round(SleepQuality$`HoursOfSleep`, digits = 2)
+
+#Convert sleep quality to numeric
+SleepQualityData$`SleepQuality`<- as.numeric(SleepQualityData$`SleepQuality`)
+
+#load a package to convert sleep quality to percent
+library(scales)
+library(formattable)
+SleepQuality$`SleepQuality` <- formattable::percent(SleepQualityData$`SleepQuality`)
+
+#Create a dataframe with the two neccessary columns and rename the columns
+SleepQualityByHours<-data.frame(SleepQuality$`HoursOfSleep`, SleepQuality$`SleepQuality`)
+colnames(SleepQualityByHours) <- c('HoursOfSleep', 'SleepQualityPercent')
+```
+
+```{r SleepQualityByHoursVisualization}
+#use ggplot to create a line graph using the data created 
+ggplot(
+  data = SleepQualityByHours,
+  mapping = aes(x = HoursOfSleep, y = SleepQualityPercent)
+  ) +
+  #customize point size, color, and shape
+  geom_point(shape = "circle", size = 1.0, colour = "#BF1B6D") +
+  #create a line of best fit and get rid of the spanning color
+  geom_smooth(
+    span = 0.75,
+    se = FALSE,
+    colour = "black",
+    method = "loess",
+    formula = y~x) +
+  #create titles and axis labels
+  labs(
+    x = "Hours of Sleep",
+    y = "Sleep Quality Percent",
+    title = "Hours of Sleep Vs. Sleep Quality"
+  ) +
+  #set the graph appearance and fix scaling issues
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(0,14, by = 1), limits = c(0,14), expand = c(0, 0))
+```
+
+#### What is Shown?
+
+The graph shows that most people are logging anywhere between 5 to 10
+hours a night. The relationship between hours of sleep and sleep quality
+show an exponential curve. There is a clear increase and trend showing
+the more sleep a person gets, the better their sleep was however around
+10 hours, the line plateaus, meaning sleep quality is likely to no
+longer improve. Overall, the graph displays 10 hours of sleep maximizes
+sleep quality.
+
+## Hours of Sleep by Day Classification
+
+#### How is the amount of sleep affected by what type of day it is?
+
+For this research question, we pulled data from the TimeSleep data set.
+We wanted to compare statistical averages such as the min, 1st quartile,
+median, 3rd quartile, max, and outliers of hours of sleep per night
+grouped by what type of day it was. For example, a day classification
+would be non-holiday weekdays, weekend days and holidays, and all days
+(all types). Since weekends and holidays are presumed to be more relaxed
+for people, we thought it would be interesting to explore how much of a
+difference there actually is. This question will be explored through a
+box-plot and summary table to display the statistical averages
+mentioned.
+
+#### Box-Plot Visualization
+
+```{r HoursByDayType}
+#create an object for filtered data
+HoursByDay <- TimeSleep %>%
+  #organize all of the same day types together
+  group_by(`Type of Days`) %>%
+  #select the two columns needed: day type and average hours asleep 
+  select(`Type of Days`, `AverageHoursPerDaySleeping`)
+```
+
+```{r HoursByDayTypeVisualization}
+#use ggplot to create a boxplot
+ggplot(
+  data = HoursByDay,
+  mapping = aes(x = `Type of Days`, y = AverageHoursPerDaySleeping)
+  ) +
+  #assign a color to fill the box plot
+  geom_boxplot(fill = "#FFD1E8") +
+  #create titles and axis labels
+  labs(
+    x = "Day Classification",
+    y = "Hours of Sleep",
+    title = "Hours of Sleep by Day Classification"
+  ) +
+  #set graph appearance and fix axis scaling
+  theme_minimal() +
+  ylim(7.5, 11)
+```
+
+#### What is Shown?
+
+As expected, the box-plot displays that Non-holiday weekdays have the
+lowest median hours of sleep and Weekend days and holidays having the
+highest median hours of sleep. There are no outliers in non-holiday
+weekdays showing consistent data within this category. There are however
+many outliers in the Weekend days and holidays group showing a higher
+number of hours of sleep. Going back to the proposed research question
+asking if people really get significantly more sleep on weekends and
+holidays or if it is just assumed, it is safe to conclude that the
+median is roughly one hour higher which is a relatively significant
+difference. In comparison, the overall (All days) median lies at roughly
+8.6. These facts overall suggest weekend days and holidays do have a
+significant increase in amount of sleep, however the difference in sleep
+is not very large.
+
+#### Summary Table
+
+```{r HoursByDaySummaryTable}
+library(readxl)
+library(kableExtra)
+library(janitor)
 
 
 
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+
+TimeSleep <- TimeSleep[-1,]
+DaysVsSleep <- TimeSleep %>%
+  group_by(`Type of Days`) %>%
+  select(`Type of Days`, `AverageHoursPerDaySleeping`) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        Q1 = ~quantile(`AverageHoursPerDaySleeping`, probs = 0.25, na.rm = TRUE),
+        median = ~median(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        Q3 = ~quantile(`AverageHoursPerDaySleeping`, probs = 0.75, na.rm = TRUE),
+        max = ~max(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        sam = ~mean(`AverageHoursPerDaySleeping`, na.rm = TRUE),
+        sasd = ~sd(`AverageHoursPerDaySleeping`, na.rm = TRUE)
+      ),
+      #round the values to avoid unecessarily large amount of decimal spaces
+      round(digits = 2)
+    ),
+    #get count and format it so that big numbers are separated with commas
+    count = format(n(), big.mark = ","),
+  )
+#rename the columns 
+colnames(DaysVsSleep) <- c("Day Classification", "Min", "1st Quartile", "Median", "3rd Quartile", "Max", "Arithmetic Mean", "Arithmetic Standard Deviation", "Count")
+#use kable to tidy the table (add caption, add grid, align columns) 
+DaysVsSleep %>%
+  kable(
+    caption = "Statistics on Average Hours Spent Sleeping and Type of Day",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6))
+  ) %>%
+  #separate rows through striping the colors
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  ) %>%
+  kableExtra::kable_classic()
+```
+
+#### What is Shown?
+
+As a visual aid to the box-plot, we have created a summary table of the
+similar statistics shown on the box-plot in a more readable format. The
+addition of the count column shows the amount of rows used to calculate
+each group. Each group has a count of 315 showing an equal amount of
+data being used to compute the statistics for each category. There is
+also the addition of the arithmetic mean which can be used as another
+form of the median to display an average. The final and last addition is
+the arithmetic standard deviation. The summary table shows the same
+information as the box-plot in which people are more likely to sleep
+more on weekends and holidays and see a significant difference in sleep
+but not by a very large amount.
+
+## Sleep Quality by Movements During Sleep
+
+#### How do number of movements per hour affect sleep quality of an individual?
+
+From the Sleep Quality data set, we proposed a question to see if there
+is any correlation between these two attributes. The two attributes used
+from the data set were \`Sleep Quality\` along the y axis and
+\`Movements Per Hour\` along the x axis. We also included a line of best
+fit after using ggplot to create a scatter plot showing correlation.
+
+```{r MovementsVSleepQuality }
+
+#convert column data to numeric
+SleepQualityData$`MovementsPerHour`<- as.numeric(SleepQualityData$`MovementsPerHour`)
+SleepQualityData$`SleepQuality`<- as.numeric(SleepQualityData$`SleepQuality`)
+
+#filter data
+movementsVsTime <- SleepQualityData %>%
+  select(MovementsPerHour, SleepQuality)
+
+#subset data
+movementsVsTime <- movementsVsTime[0:250, ]
+
+#use ggplot to create a line graph. Select the data and x&y axis
+ggplot(
+  data = movementsVsTime,
+  mapping = aes(x = MovementsPerHour, y = SleepQuality )
+  ) +
+  geom_point(shape = "circle", colour = "#BF1B6D") + #assign the points a shape and color and add a line of best fit
+  geom_smooth(
+    span = 0.75,
+    se = FALSE,
+    colour = "black",
+    method = "loess", 
+    formula = y ~ x
+  ) +
+  geom_point(shape = "circle", colour = "#BF1B6D") +
+  # adding titles and labels
+  labs( # adding titles and labels
+    x = "Movements Per Hour",
+    y = "Sleep Quality",
+    title = "Movements Per Hour vs Sleep Quality"
+  ) +
+  theme_minimal() + #set the graph appearance
+  scale_x_continuous(breaks = seq(0,150, by = 15), expand = c(0, 0))  #fix the x axis scaling
+```
+
+#### What is Shown?
+
+As shown on the scatter plot there is a correlation between these two
+attributes. As most would assume, it is a negative correlation as well.
+Our research proves that as the number of movements per hour increase,
+the sleep quality of an individual decreases. As shown on the scatter
+plot there is a correlation between these two attributes. As most would
+assume, it is a negative correlation as well. Our research proves that
+as the number of movements per hour increase, the sleep quality of an
+individual decreases. Most of the movements range between 25 and 75 with
+outliers at 0 and 125. As for sleep quality, most of the points range
+from around 6.5 to 1.0.
+
+## Conclusion
+
+From our two data sets were able to gain a lot of insight about various
+factors that impact sleep. We were able to assess the amount of sleep
+that various age groups get each night. Our data also highlighted the
+positive relationship between the number of hours of sleep and sleep
+quality. This indicated that people of all age groups could benefit from
+sleeping more. Another characteristic impacting sleep quality was number
+of movements per hour. Our data showed a negative correlation between
+movements per hour and sleep quality indicating that more movement leads
+to lower quality sleep. We also found that typically people are getting
+more sleep on weekends and holidays than they are on a normal weekday.
+These visualizations could be used to help develop better ways to
+achieve quality sleep.
