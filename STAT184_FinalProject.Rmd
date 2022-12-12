@@ -44,23 +44,27 @@ library(readr)
 library(tidyr)
 library(esquisse)
 
+TimeSleep <- read_excel(
+  path = "~/Desktop/TimeSleep.xlsx",
+  skip = 1)
 
-TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
-SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx")
+SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx", skip = 1)
 ```
 
 ```{r TimeSleep}
 #load data 
-TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+TimeSleep <- read_excel(
+  path = "~/Desktop/TimeSleep.xlsx",
+  skip = 1)
 
 #rename columns 
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 
 #Make values in "Average Hours Per Day Sleeping" coloumns 
-TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
-
-#removes first column 
-TimeSleep <- TimeSleep[-1,]
+# TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
+# 
+# #removes first column 
+# TimeSleep <- TimeSleep[-1,]
 ```
 
 ```{r SleepQuality}
@@ -149,8 +153,10 @@ of best fit.
 #TidyData
 
 #Create a dataframe with only the necessary columns
-SleepQuality <- data.frame(SleepQualityData$`Start`, SleepQualityData$`End`, SleepQualityData$`SleepQuality`)
+SleepQuality <- data.frame(SleepQualityData$'Start', SleepQualityData$'End', SleepQualityData$'SleepQuality')
 #rename the columns
+
+
 colnames(SleepQuality) <- c('Start', 'End', 'SleepQuality')
 
 #Create a column calculating the difference in timestamps to get hours of sleep
@@ -271,7 +277,9 @@ is not very large.
 library(readxl)
 library(kableExtra)
 library(janitor)
-TimeSleep <- read_excel("~/Desktop/TimeSleep.xlsx")
+
+
+
 colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
 TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
 TimeSleep <- TimeSleep[-1,]
