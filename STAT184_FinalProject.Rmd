@@ -2,16 +2,16 @@
 title: "Analyzing Sleep Data and Trends"
 author: "Veronica Jenkins, Anika Deshpande, Katie Clayton"
 date: "`r Sys.Date()`"
-output: 
+output:
   html_notebook:
-    code folding: TRUE
-editor_options: 
-  markdown: 
+    code_folding: hide
+editor_options:
+  markdown:
     wrap: 72
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 
 ## Introduction
@@ -55,13 +55,8 @@ SleepQualityData <- read_excel("~/Desktop/SleepQualityData.xlsx", skip = 1)
 
 
 #rename columns 
-colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','Age Group','Activity','Sex')
+colnames(TimeSleep)<- c('Index','Year','Period','AverageHoursPerDaySleeping','Standard Error','Type of Days','AgeGroup','Activity','Sex')
 
-#Make values in "Average Hours Per Day Sleeping" coloumns 
-# TimeSleep$`AverageHoursPerDaySleeping`<- as.numeric(TimeSleep$`AverageHoursPerDaySleeping`)
-# 
-# #removes first column 
-# TimeSleep <- TimeSleep[-1,]
 ```
 
 ```{r SleepQuality}
@@ -76,7 +71,7 @@ SleepQualityData <- SleepQualityData[-1,]
 
 ## Hours by Age
 
-#### Is there change in mean hours of sleep per night depending on different age groups?
+### Is there change in mean hours of sleep per night depending on different age groups?
 
 The Time Sleep data set presented two attributes that were easy to
 compare: Mean Hours of Sleep Per Night, and Age Group. We chose to
@@ -90,9 +85,9 @@ to create the bar graph.
 ```{r WrangleHoursByAge}
 #creates new data frame with of average hour per day sleeping
 HoursByAge<- TimeSleep%>%
-  group_by(`Age Group`)%>%
+  group_by(AgeGroup)%>%
   summarize(
-    Mean=mean(`AverageHoursPerDaySleeping`)
+    Mean=mean(AverageHoursPerDaySleeping)
   )
 HoursByAge<-HoursByAge[-2,]
 ```
@@ -106,7 +101,7 @@ library(dplyr)
 
 ggplot(
   data = HoursByAge,
-  mapping = aes(x = `Age Group`, weight = Mean)
+  mapping = aes(x = AgeGroup, weight = Mean)
 ) +
   geom_bar(fill = "#FFD1E8", width = 0.67, color = "black") +
   # adding titles and labels
@@ -115,8 +110,8 @@ ggplot(
     y = "Mean Hours of Sleep",
     title = "Mean Hours of Sleep per Night Depending on Age Group"
   ) +
-  theme(axis.line.x = element_line(color="black", size = .25),
-        axis.line.y = element_line(color="black", size = .25)
+  theme(axis.line.x = element_line(color="black", linewidth = .25),
+        axis.line.y = element_line(color="black", linewidth = .25)
   ) +
   scale_y_continuous(breaks = seq(0,10, by = 0.5), limits = c(0,10), expand = c(0, 0))
 ```
@@ -157,7 +152,7 @@ colnames(SleepQuality) <- c('Start', 'End', 'SleepQuality')
 
 #Create a column calculating the difference in timestamps to get hours of sleep
 SleepQuality <- transform(
-  SleepQuality, HoursOfSleep= as.numeric(difftime(as.POSIXct(SleepQualityData$`End`), as.POSIXct(SleepQualityData$`Start`)), units = "hours"))
+  SleepQuality, HoursOfSleep= as.numeric(difftime(as.POSIXct(SleepQualityData$End), as.POSIXct(SleepQualityData$`Start`)), units = "hours"))
 
 #round hours of sleep
 SleepQuality$`HoursOfSleep` <- round(SleepQuality$`HoursOfSleep`, digits = 2)
